@@ -1,0 +1,95 @@
+
+# Import necessary libraries
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from sklearn.preprocessing import StandardScaler
+# Load the dataset
+file_path = 'Churn_Modelling.csv'
+df = pd.read_csv(file_path)
+# Pre-processing: fill missing values, encode categorical variables
+# Additional pre-processing and feature engineering can be added if needed
+# Encode categorical variables using one-hot encoding
+df_encoded = pd.get_dummies(df, columns=['Geography', 'Gender'], drop_first=True)
+# Prepare data for machine learning
+X = df_encoded.drop(['RowNumber', 'CustomerId', 'Surname', 'Exited'], axis=1)
+y = df_encoded['Exited']
+# Split data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+# Standardize the features
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+# Build and train the models
+logistic_model = LogisticRegression()
+random_forest_model = RandomForestClassifier(random_state=42)
+gradient_boosting_model = GradientBoostingClassifier(random_state=42)
+
+logistic_model.fit(X_train, y_train)
+random_forest_model.fit(X_train, y_train)
+gradient_boosting_model.fit(X_train, y_train)
+GradientBoostingClassifier(random_state=42)
+In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook.
+On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.
+# Evaluate and print the results
+def evaluate_model(model, X, y):
+    pred = model.predict(X)
+    accuracy = accuracy_score(y, pred)
+    conf_matrix = confusion_matrix(y, pred)
+    class_report = classification_report(y, pred)
+
+    return accuracy, conf_matrix, class_report
+
+models = {'Logistic Regression': logistic_model, 'Random Forest': random_forest_model, 'Gradient Boosting': gradient_boosting_model}
+
+for model_name, model in models.items():
+    accuracy, conf_matrix, class_report = evaluate_model(model, X_test, y_test)
+    
+    print(f"\n{model_name} Accuracy: {accuracy}")
+    print(f"Confusion Matrix ({model_name}):\n", conf_matrix)
+    print(f"Classification Report ({model_name}):\n", class_report)
+Logistic Regression Accuracy: 0.8113333333333334
+Confusion Matrix (Logistic Regression):
+ [[2318   98]
+ [ 468  116]]
+Classification Report (Logistic Regression):
+               precision    recall  f1-score   support
+
+           0       0.83      0.96      0.89      2416
+           1       0.54      0.20      0.29       584
+
+    accuracy                           0.81      3000
+   macro avg       0.69      0.58      0.59      3000
+weighted avg       0.78      0.81      0.77      3000
+
+
+Random Forest Accuracy: 0.8673333333333333
+Confusion Matrix (Random Forest):
+ [[2328   88]
+ [ 310  274]]
+Classification Report (Random Forest):
+               precision    recall  f1-score   support
+
+           0       0.88      0.96      0.92      2416
+           1       0.76      0.47      0.58       584
+
+    accuracy                           0.87      3000
+   macro avg       0.82      0.72      0.75      3000
+weighted avg       0.86      0.87      0.85      3000
+
+
+Gradient Boosting Accuracy: 0.871
+Confusion Matrix (Gradient Boosting):
+ [[2330   86]
+ [ 301  283]]
+Classification Report (Gradient Boosting):
+               precision    recall  f1-score   support
+
+           0       0.89      0.96      0.92      2416
+           1       0.77      0.48      0.59       584
+
+    accuracy                           0.87      3000
+   macro avg       0.83      0.72      0.76      3000
+weighted avg       0.86      0.87      0.86      3000
